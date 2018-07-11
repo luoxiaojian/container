@@ -41,7 +41,7 @@ class gvector {
 
   ~gvector() {
     if (start_ != NULL) {
-      _Destroy(start_, finish_);
+      _GDestroy(start_, finish_);
       GFREE(start_, end_of_storage_ - start_);
     }
   }
@@ -52,7 +52,7 @@ class gvector {
   void resize(size_t n, const T &val) {
     size_t _size = finish_ - start_;
     if (n < _size) {
-      _Destroy(start_ + n, finish_);
+      _GDestroy(start_ + n, finish_);
       finish_ = start_ + n;
     } else {
       size_t _capacity = end_of_storage_ - start_;
@@ -63,7 +63,7 @@ class gvector {
         T *new_start = reinterpret_cast<T *>(GMALLOC(new_capacity * sizeof(T)));
         T *new_finish = uninitialized_gcopy(start_, finish_, new_start);
         new_finish = uninitialized_gfill_n(new_finish, n - _size, val);
-        _Destroy(start_, finish_);
+        _GDestroy(start_, finish_);
         GFREE(start_, _capacity);
         start_ = new_start;
         finish_ = new_finish;

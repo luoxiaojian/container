@@ -9,70 +9,62 @@
 #include "include/construct.h"
 #include "include/gtype_traits.h"
 
-template <typename _InputIterator, typename _ForwardIterator>
-inline _ForwardIterator __uninitialized_gcopy_aux(_InputIterator __first,
-                                                  _InputIterator __last,
-                                                  _ForwardIterator __result,
-                                                  __true_gtype) {
-  return std::copy(__first, __last, __result);
+template <typename InputIterator, typename ForwardIterator>
+inline ForwardIterator uninitialized_gcopy_aux(InputIterator first,
+                                               InputIterator last,
+                                               ForwardIterator result,
+                                               true_gtype) {
+  return std::copy(first, last, result);
 }
 
-template <typename _InputIterator, typename _ForwardIterator>
-inline _ForwardIterator __uninitialized_gcopy_aux(_InputIterator __first,
-                                                  _InputIterator __last,
-                                                  _ForwardIterator __result,
-                                                  __false_gtype) {
-  _ForwardIterator __cur = __result;
-  for (; __first != __last; ++__first, ++__cur) {
-    _GConstruct(&*__cur, *__first);
+template <typename InputIterator, typename ForwardIterator>
+inline ForwardIterator uninitialized_gcopy_aux(InputIterator first,
+                                               InputIterator last,
+                                               ForwardIterator result,
+                                               false_gtype) {
+  ForwardIterator cur = result;
+  for (; first != last; ++first, ++cur) {
+    _GConstruct(&*cur, *first);
   }
-  return __cur;
+  return cur;
 }
 
-template <typename _InputIterator, typename _ForwardIterator>
-inline _ForwardIterator uninitialized_gcopy(_InputIterator __first,
-                                            _InputIterator __last,
-                                            _ForwardIterator __result) {
-  typedef typename std::iterator_traits<_ForwardIterator>::value_type _Value_type;
-  typedef typename __gtype_traits<_Value_type>::is_pod_type _Is_pod_type;
-  return __uninitialized_gcopy_aux(
-      __first, __last, __result,
-      _Is_pod_type());
-      // __gtype_traits<
-          // std::iterator_traits<_ForwardIterator>::value_type>::is_pod_type());
+template <typename InputIterator, typename ForwardIterator>
+inline ForwardIterator uninitialized_gcopy(InputIterator first,
+                                           InputIterator last,
+                                           ForwardIterator result) {
+  typedef typename std::iterator_traits<ForwardIterator>::value_type Value_type;
+  typedef typename gtype_traits<Value_type>::is_pod_type Is_pod_type;
+  return uninitialized_gcopy_aux(first, last, result, Is_pod_type());
 }
 
-inline char* uninitialized_gcopy(const char* __first, const char* __last,
-                                 char* __result) {
-  memmove(__result, __first, __last - __first);
-  return __result + (__last - __first);
+inline char* uninitialized_gcopy(const char* first, const char* last,
+                                 char* result) {
+  memmove(result, first, last - first);
+  return result + (last - first);
 }
 
-template <typename _ForwardIterator, typename _Size, typename _Tp>
-inline _ForwardIterator __uninitialized_gfill_n_aux(_ForwardIterator __first,
-                                                    _Size __n, const _Tp& __x,
-                                                    __true_gtype) {
-  return std::fill_n(__first, __n, __x);
+template <typename ForwardIterator, typename Size, typename Tp>
+inline ForwardIterator uninitialized_gfill_n_aux(ForwardIterator first, Size n,
+                                                 const Tp& x, true_gtype) {
+  return std::fill_n(first, n, x);
 }
 
-template <typename _ForwardIterator, typename _Size, typename _Tp>
-inline _ForwardIterator __uninitialized_gfill_n_aux(_ForwardIterator __first,
-                                                    _Size __n, const _Tp& __x,
-                                                    __false_gtype) {
-  _ForwardIterator __cur = __first;
-  for (; __n > 0; --__n, ++__cur) {
-    _GConstruct(&*__cur, __x);
+template <typename ForwardIterator, typename Size, typename Tp>
+inline ForwardIterator uninitialized_gfill_n_aux(ForwardIterator first, Size n,
+                                                 const Tp& x, false_gtype) {
+  ForwardIterator cur = first;
+  for (; n > 0; --n, ++cur) {
+    _GConstruct(&*cur, x);
   }
-  return __cur;
+  return cur;
 }
 
-template <typename _ForwardIterator, typename _Size, typename _Tp>
-inline _ForwardIterator uninitialized_gfill_n(_ForwardIterator __first, _Size __n,
-                                  const _Tp& __x) {
-  typedef typename std::iterator_traits<_ForwardIterator>::value_type _Value_type;
-  typedef typename __gtype_traits<_Value_type>::is_pod_type _Is_pod_type;
-  return __uninitialized_gfill_n_aux(__first, __n, __x, _Is_pod_type());
-      // __gtype_traits<
-          // std::iterator_traits<_ForwardIterator>::value_type>::is_pod_type());
+template <typename ForwardIterator, typename Size, typename Tp>
+inline ForwardIterator uninitialized_gfill_n(ForwardIterator first, Size n,
+                                             const Tp& x) {
+  typedef typename std::iterator_traits<ForwardIterator>::value_type Value_type;
+  typedef typename gtype_traits<Value_type>::is_pod_type Is_pod_type;
+  return uninitialized_gfill_n_aux(first, n, x, Is_pod_type());
 }
 #endif

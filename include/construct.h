@@ -5,42 +5,38 @@
 
 #include <iterator>
 
-template <typename _T1, typename _T2>
-inline void _GConstruct(_T1* __p, const _T2& __value) {
-  new (static_cast<void*>(__p)) _T1(__value);
+template <typename T1, typename T2>
+inline void _GConstruct(T1* p, const T2& value) {
+  new (static_cast<void*>(p)) T1(value);
 }
 
-template <typename _T1>
-inline void _GConstruct(_T1* __p) {
-  new (static_cast<void*>(__p)) _T1();
+template <typename T1>
+inline void _GConstruct(T1* p) {
+  new (static_cast<void*>(p)) T1();
 }
 
-template <typename _Tp>
-inline void _Destroy(_Tp* __pointer) {
-  __pointer->~_Tp();
+template <typename Tp>
+inline void _GDestroy(Tp* pointer) {
+  pointer->~Tp();
 }
 
-template <typename _ForwardIterator>
-inline void __destroy_aux(_ForwardIterator __first, _ForwardIterator __last,
-                          __false_gtype) {
-  for (; __first != __last; ++__first) {
-    _Destroy(&*__first);
+template <typename ForwardIterator>
+inline void destroy_aux(ForwardIterator first, ForwardIterator last,
+                        false_gtype) {
+  for (; first != last; ++first) {
+    _GDestroy(&*first);
   }
 }
 
-template <typename _ForwardIterator>
-inline void __destroy_aux(_ForwardIterator __first, _ForwardIterator __last,
-                          __true_gtype) {}
+template <typename ForwardIterator>
+inline void destroy_aux(ForwardIterator first, ForwardIterator last,
+                        true_gtype) {}
 
-template <typename _ForwardIterator>
-inline void _Destroy(_ForwardIterator __first, _ForwardIterator __last) {
-  typedef typename std::iterator_traits<_ForwardIterator>::value_type _Value_type;
-  typedef typename __gtype_traits<_Value_type>::is_pod_type _Is_pod_type;
-  __destroy_aux(
-      __first, __last,
-      _Is_pod_type());
-      //__gtype_traits<
-          // std::iterator_traits<_ForwardIterator>::value_type>::is_pod_type());
+template <typename ForwardIterator>
+inline void _GDestroy(ForwardIterator first, ForwardIterator last) {
+  typedef typename std::iterator_traits<ForwardIterator>::value_type Value_type;
+  typedef typename gtype_traits<Value_type>::is_pod_type Is_pod_type;
+  destroy_aux(first, last, Is_pod_type());
 }
 
 #endif

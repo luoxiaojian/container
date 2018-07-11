@@ -1,39 +1,39 @@
 #ifndef GTYPE_TRAITS_H_
 #define GTYPE_TRAITS_H_
 
-struct __true_gtype {};
-struct __false_gtype {};
+struct true_gtype {};
+struct false_gtype {};
 
 template <class _Tp>
-struct __gtype_traits {
-  typedef __false_gtype is_pod_type;
+struct gtype_traits {
+  typedef false_gtype is_pod_type;
 };
 
 #define DECLARE_TT(type, vt1, tt1) \
   template <>                      \
-  struct __gtype_traits<type> {    \
+  struct gtype_traits<type> {      \
     typedef vt1 tt1;               \
   };
 
-DECLARE_TT(bool, __true_gtype, is_pod_type)
-DECLARE_TT(char, __true_gtype, is_pod_type)
-DECLARE_TT(signed char, __true_gtype, is_pod_type)
-DECLARE_TT(unsigned char, __true_gtype, is_pod_type)
-DECLARE_TT(short, __true_gtype, is_pod_type)
-DECLARE_TT(unsigned short, __true_gtype, is_pod_type)
-DECLARE_TT(int, __true_gtype, is_pod_type)
-DECLARE_TT(unsigned int, __true_gtype, is_pod_type)
-DECLARE_TT(long, __true_gtype, is_pod_type)
-DECLARE_TT(unsigned long, __true_gtype, is_pod_type)
-DECLARE_TT(long long, __true_gtype, is_pod_type)
-DECLARE_TT(unsigned long long, __true_gtype, is_pod_type)
-DECLARE_TT(float, __true_gtype, is_pod_type)
-DECLARE_TT(double, __true_gtype, is_pod_type)
-DECLARE_TT(long double, __true_gtype, is_pod_type)
+DECLARE_TT(bool, true_gtype, is_pod_type)
+DECLARE_TT(char, true_gtype, is_pod_type)
+DECLARE_TT(signed char, true_gtype, is_pod_type)
+DECLARE_TT(unsigned char, true_gtype, is_pod_type)
+DECLARE_TT(short, true_gtype, is_pod_type)
+DECLARE_TT(unsigned short, true_gtype, is_pod_type)
+DECLARE_TT(int, true_gtype, is_pod_type)
+DECLARE_TT(unsigned int, true_gtype, is_pod_type)
+DECLARE_TT(long, true_gtype, is_pod_type)
+DECLARE_TT(unsigned long, true_gtype, is_pod_type)
+DECLARE_TT(long long, true_gtype, is_pod_type)
+DECLARE_TT(unsigned long long, true_gtype, is_pod_type)
+DECLARE_TT(float, true_gtype, is_pod_type)
+DECLARE_TT(double, true_gtype, is_pod_type)
+DECLARE_TT(long double, true_gtype, is_pod_type)
 
 template <class _Tp>
-struct __gtype_traits<_Tp*> {
-  typedef __true_gtype is_pod_type;
+struct gtype_traits<_Tp*> {
+  typedef true_gtype is_pod_type;
 };
 
 #endif
