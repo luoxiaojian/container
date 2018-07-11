@@ -33,10 +33,13 @@ template <typename _InputIterator, typename _ForwardIterator>
 inline _ForwardIterator uninitialized_gcopy(_InputIterator __first,
                                             _InputIterator __last,
                                             _ForwardIterator __result) {
+  typedef typename std::iterator_traits<_ForwardIterator>::value_type _Value_type;
+  typedef typename __gtype_traits<_Value_type>::is_pod_type _Is_pod_type;
   return __uninitialized_gcopy_aux(
       __first, __last, __result,
-      __gtype_traits<
-          std::iterator_traits<_ForwardIterator>::value_type>::is_pod_type());
+      _Is_pod_type());
+      // __gtype_traits<
+          // std::iterator_traits<_ForwardIterator>::value_type>::is_pod_type());
 }
 
 inline char* uninitialized_gcopy(const char* __first, const char* __last,
@@ -64,11 +67,12 @@ inline _ForwardIterator __uninitialized_gfill_n_aux(_ForwardIterator __first,
 }
 
 template <typename _ForwardIterator, typename _Size, typename _Tp>
-inline void uninitialized_gfill_n(_ForwardIterator __first, _Size __n,
+inline _ForwardIterator uninitialized_gfill_n(_ForwardIterator __first, _Size __n,
                                   const _Tp& __x) {
-  __uninitialized_gfill_n_aux(
-      __first, __n,
-      __gtype_traits<
-          std::iterator_traits<_ForwardIterator>::value_type>::is_pod_type());
+  typedef typename std::iterator_traits<_ForwardIterator>::value_type _Value_type;
+  typedef typename __gtype_traits<_Value_type>::is_pod_type _Is_pod_type;
+  return __uninitialized_gfill_n_aux(__first, __n, __x, _Is_pod_type());
+      // __gtype_traits<
+          // std::iterator_traits<_ForwardIterator>::value_type>::is_pod_type());
 }
 #endif

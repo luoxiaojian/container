@@ -50,21 +50,21 @@ class gvector {
   size_t capacity() const { return end_of_storage_ - start_; }
 
   void resize(size_t n, const T &val) {
-    size_t size = size();
-    if (n < size) {
+    size_t _size = finish_ - start_;
+    if (n < _size) {
       _Destroy(start_ + n, finish_);
       finish_ = start_ + n;
     } else {
-      size_t capacity = capacity();
-      if (n < capacity) {
-        finish_ = uninitialized_gfill_n(finish_, n - size, val);
+      size_t _capacity = end_of_storage_ - start_;
+      if (n < _capacity) {
+        finish_ = uninitialized_gfill_n(finish_, n - _size, val);
       } else {
-        size_t new_capacity = MAX(capacity << 1, ROUND_UP(n));
+        size_t new_capacity = MAX(_capacity << 1, ROUND_UP(n));
         T *new_start = reinterpret_cast<T *>(GMALLOC(new_capacity * sizeof(T)));
         T *new_finish = uninitialized_gcopy(start_, finish_, new_start);
-        new_finish = uninitialized_gfill_n(new_finish, n - size, val);
+        new_finish = uninitialized_gfill_n(new_finish, n - _size, val);
         _Destroy(start_, finish_);
-        GFREE(start_, capacity);
+        GFREE(start_, _capacity);
         start_ = new_start;
         finish_ = new_finish;
         end_of_storage_ = new_start + new_capacity;
