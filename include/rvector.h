@@ -57,18 +57,6 @@ class Handle {
 
   inline void SetValue(T value) { value_ = value; }
 
-  friend InArchive& operator<<(InArchive& archive, const Handle& h) {
-    archive << h.value_;
-    return archive;
-  }
-
-  friend OutArchive& operator>>(OutArchive& archive, Handle& h) {
-    archive >> h.value_;
-    return archive;
-  }
-
-  friend class MessageBuffer;
-
  private:
   T value_;
 };
@@ -104,7 +92,7 @@ class Range {
 };
 
 template <typename T, typename U>
-class rvector : protected gvector<T> {
+class rvector : public gvector<T> {
  public:
   rvector() : gvector<T>() {}
   explicit rvector(const Range<U>& range)
@@ -112,7 +100,7 @@ class rvector : protected gvector<T> {
   rvector(const Range<U>& range, const T& value)
       : gvector<T>(range.size(), value), range_(range) {}
 
-  ~rvector() { ~gvector<T>(); }
+  ~rvector() {}
 
   void Init(const Range<U>& range, const T& value) {
     gvector<T>::clear();
@@ -121,14 +109,14 @@ class rvector : protected gvector<T> {
   }
 
   void SetValue(Range<U>& range, const T& value) {
-    std::fill_n(&start_[range.begin().GetValue() - range_.begin().GetValue()],
+    std::fill_n(&gvector<T>::start_[range.begin().GetValue() - range_.begin().GetValue()],
                 range.size(), value);
   }
 
-  void SetValue(const T& value) { std::fill(start_, finish_, value); }
+  void SetValue(const T& value) { std::fill(gvector<T>::start_, gvector<T>::finish_, value); }
 
   inline T& operator[](const Handle<U>& loc) {
-    return start_[loc.GetValue() - range_.begin().GetValue()];
+    return gvector<T>::start_[loc.GetValue() - range_.begin().GetValue()];
   }
 
  private:
