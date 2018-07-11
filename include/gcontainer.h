@@ -29,19 +29,19 @@ class gvector {
 
   explicit gvector(size_t n) {
     start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
-    finish_ = gc_impl::uninitialized_gfill_n_nv(start_, n);
+    finish_ = gc_impl::uninitialized_fill_n_nv(start_, n);
     end_of_storage_ = start_ + n;
   }
 
   gvector(size_t n, const T &value) {
     start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
-    finish_ = gc_impl::uninitialized_gfill_n(start_, n, value);
+    finish_ = gc_impl::uninitialized_fill_n(start_, n, value);
     end_of_storage_ = start_ + n;
   }
 
   ~gvector() {
     if (start_ != NULL) {
-      gc_impl::_GDestroy(start_, finish_);
+      gc_impl::Destroy(start_, finish_);
       GFREE(start_, end_of_storage_ - start_);
     }
   }
@@ -52,19 +52,18 @@ class gvector {
   void resize(size_t n, const T &val) {
     size_t _size = finish_ - start_;
     if (n < _size) {
-      gc_impl::_GDestroy(start_ + n, finish_);
+      gc_impl::Destroy(start_ + n, finish_);
       finish_ = start_ + n;
     } else {
       size_t _capacity = end_of_storage_ - start_;
       if (n < _capacity) {
-        finish_ = gc_impl::uninitialized_gfill_n(finish_, n - _size, val);
+        finish_ = gc_impl::uninitialized_fill_n(finish_, n - _size, val);
       } else {
         size_t new_capacity = MAX(_capacity << 1, ROUND_UP(n));
         T *new_start = reinterpret_cast<T *>(GMALLOC(new_capacity * sizeof(T)));
-        T *new_finish =
-            gc_impl::uninitialized_gcopy(start_, finish_, new_start);
-        new_finish = gc_impl::uninitialized_gfill_n(new_finish, n - _size, val);
-        gc_impl::_GDestroy(start_, finish_);
+        T *new_finish = gc_impl::uninitialized_copy(start_, finish_, new_start);
+        new_finish = gc_impl::uninitialized_fill_n(new_finish, n - _size, val);
+        gc_impl::Destroy(start_, finish_);
         GFREE(start_, _capacity);
         start_ = new_start;
         finish_ = new_finish;
@@ -75,19 +74,18 @@ class gvector {
   void resize(size_t n) {
     size_t _size = finish_ - start_;
     if (n < _size) {
-      gc_impl::_GDestroy(start_ + n, finish_);
+      gc_impl::Destroy(start_ + n, finish_);
       finish_ = start_ + n;
     } else {
       size_t _capacity = end_of_storage_ - start_;
       if (n < _capacity) {
-        finish_ = gc_impl::uninitialized_gfill_n_nv(finish_, n - _size);
+        finish_ = gc_impl::uninitialized_fill_n_nv(finish_, n - _size);
       } else {
         size_t new_capacity = MAX(_capacity << 1, ROUND_UP(n));
         T *new_start = reinterpret_cast<T *>(GMALLOC(new_capacity * sizeof(T)));
-        T *new_finish =
-            gc_impl::uninitialized_gcopy(start_, finish_, new_start);
-        new_finish = gc_impl::uninitialized_gfill_n_nv(new_finish, n - _size);
-        gc_impl::_GDestroy(start_, finish_);
+        T *new_finish = gc_impl::uninitialized_copy(start_, finish_, new_start);
+        new_finish = gc_impl::uninitialized_fill_n_nv(new_finish, n - _size);
+        gc_impl::Destroy(start_, finish_);
         GFREE(start_, _capacity);
         start_ = new_start;
         finish_ = new_finish;
