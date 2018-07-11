@@ -18,7 +18,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g -fprofile-arcs -ftest-coverage")
 SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 
-set(TEST_FILES push_back resize string self_def dtor_perf construct_perf)
+set(TEST_FILES push_back resize string self_def dtor_perf construct_perf rvector)
 
 foreach (f ${TEST_FILES})
   message(STATUS "Found test - " ${f})

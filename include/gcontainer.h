@@ -94,6 +94,11 @@ class gvector {
     }
   }
 
+  void clear() {
+    gc_impl::Destroy(start_, finish_);
+    finish_ = start_;
+  }
+
   void swap(gvector &rhs) {
     std::swap(start_, rhs.start_);
     std::swap(finish_, rhs.finish_);
