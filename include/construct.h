@@ -5,6 +5,8 @@
 
 #include <iterator>
 
+namespace gc_impl {
+
 template <typename T1, typename T2>
 inline void _GConstruct(T1* p, const T2& value) {
   new (static_cast<void*>(p)) T1(value);
@@ -38,5 +40,7 @@ inline void _GDestroy(ForwardIterator first, ForwardIterator last) {
   typedef typename gtype_traits<Value_type>::is_pod_type Is_pod_type;
   destroy_aux(first, last, Is_pod_type());
 }
+
+}  // namespace gc_impl
 
 #endif

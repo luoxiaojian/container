@@ -9,6 +9,8 @@
 #include "include/construct.h"
 #include "include/gtype_traits.h"
 
+namespace gc_impl {
+
 template <typename InputIterator, typename ForwardIterator>
 inline ForwardIterator uninitialized_gcopy_aux(InputIterator first,
                                                InputIterator last,
@@ -89,4 +91,6 @@ inline ForwardIterator uninitialized_gfill_n_nv(ForwardIterator first, Size n) {
   typedef typename gtype_traits<Value_type>::is_pod_type Is_pod_type;
   return uninitialized_gfill_n_nv_aux(first, n, Is_pod_type());
 }
+
+}  // namespace gc_impl
 #endif

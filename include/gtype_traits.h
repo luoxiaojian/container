@@ -1,6 +1,8 @@
 #ifndef GTYPE_TRAITS_H_
 #define GTYPE_TRAITS_H_
 
+namespace gc_impl {
+
 struct true_gtype {};
 struct false_gtype {};
 
@@ -35,5 +37,7 @@ template <class _Tp>
 struct gtype_traits<_Tp*> {
   typedef true_gtype is_pod_type;
 };
+
+}  // namespace gc_impl
 
 #endif
