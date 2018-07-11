@@ -37,7 +37,7 @@ inline void destroy_aux(ForwardIterator first, ForwardIterator last,
 template <typename ForwardIterator>
 inline void Destroy(ForwardIterator first, ForwardIterator last) {
   typedef typename std::iterator_traits<ForwardIterator>::value_type Value_type;
-  typedef typename gtype_traits<Value_type>::is_pod_type Is_pod_type;
+  typedef typename type_traits<Value_type>::is_pod_type Is_pod_type;
   destroy_aux(first, last, Is_pod_type());
 }
 

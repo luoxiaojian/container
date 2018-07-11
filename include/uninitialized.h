@@ -63,8 +63,8 @@ inline ForwardIterator uninitialized_fill_n_aux(ForwardIterator first, Size n,
 }
 
 template <typename ForwardIterator, typename Size, typename Tp>
-inline ForwardIterator uninitialized_gfill_n(ForwardIterator first, Size n,
-                                             const Tp& x) {
+inline ForwardIterator uninitialized_fill_n(ForwardIterator first, Size n,
+                                            const Tp& x) {
   typedef typename std::iterator_traits<ForwardIterator>::value_type Value_type;
   typedef typename type_traits<Value_type>::is_pod_type Is_pod_type;
   return uninitialized_fill_n_aux(first, n, x, Is_pod_type());
