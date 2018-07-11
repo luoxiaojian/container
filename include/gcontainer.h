@@ -29,7 +29,7 @@ class gvector {
 
   explicit gvector(size_t n) {
     start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
-    finish_ = uninitialized_gfill2_n(start_, n, T());
+    finish_ = uninitialized_gfill_n_nv(start_, n);
     end_of_storage_ = start_ + n;
   }
 
@@ -71,7 +71,28 @@ class gvector {
       }
     }
   }
-  void resize(size_t n) { resize(n, T()); }
+  void resize(size_t n) {
+    size_t _size = finish_ - start_;
+    if (n < _size) {
+      _GDestroy(start_ + n, finish_);
+      finish_ = start_ + n;
+    } else {
+      size_t _capacity = end_of_storage_ - start_;
+      if (n < _capacity) {
+        finish_ = uninitialized_gfill_n_nv(finish_, n - _size);
+      } else {
+        size_t new_capacity = MAX(_capacity << 1, ROUND_UP(n));
+        T *new_start = reinterpret_cast<T *>(GMALLOC(new_capacity * sizeof(T)));
+        T *new_finish = uninitialized_gcopy(start_, finish_, new_start);
+        new_finish = uninitialized_gfill_n_nv(new_finish, n - _size);
+        _GDestroy(start_, finish_);
+        GFREE(start_, _capacity);
+        start_ = new_start;
+        finish_ = new_finish;
+        end_of_storage_ = new_start + new_capacity;
+      }
+    }
+  }
 
   void swap(gvector &rhs) {
     std::swap(start_, rhs.start_);
