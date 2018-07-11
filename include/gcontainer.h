@@ -29,7 +29,7 @@ class gvector {
 
   explicit gvector(size_t n) {
     start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
-    finish_ = uninitialized_gfill_n(start_, n, T());
+    finish_ = uninitialized_gfill2_n(start_, n, T());
     end_of_storage_ = start_ + n;
   }
 
