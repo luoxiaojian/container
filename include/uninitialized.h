@@ -70,12 +70,12 @@ inline ForwardIterator uninitialized_gfill_n(ForwardIterator first, Size n,
   return uninitialized_gfill_n_aux(first, n, x, Is_pod_type());
 }
 
-template <typename ForwardIterator, typename Size, typename Tp>
+template <typename ForwardIterator, typename Size>
 inline ForwardIterator uninitialized_gfill_n_nv_aux(ForwardIterator first,
                                                     Size n, true_gtype) {
   return first + n;
 }
-template <typename ForwardIterator, typename Size, typename Tp>
+template <typename ForwardIterator, typename Size>
 inline ForwardIterator uninitialized_gfill_n_nv_aux(ForwardIterator first,
                                                     Size n, false_gtype) {
   ForwardIterator cur = first;
@@ -85,7 +85,7 @@ inline ForwardIterator uninitialized_gfill_n_nv_aux(ForwardIterator first,
   return cur;
 }
 
-template <typename ForwardIterator, typename Size, typename Tp>
+template <typename ForwardIterator, typename Size>
 inline ForwardIterator uninitialized_gfill_n_nv(ForwardIterator first, Size n) {
   typedef typename std::iterator_traits<ForwardIterator>::value_type Value_type;
   typedef typename gtype_traits<Value_type>::is_pod_type Is_pod_type;
