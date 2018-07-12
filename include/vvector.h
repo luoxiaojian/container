@@ -1,9 +1,11 @@
-#ifndef RVECTOR_H_
-#define RVECTOR_H_
+#ifndef VVECTOR_H_
+#define VVECTOR_H_
 
 #include <algorithm>
 
 #include "include/gcontainer.h"
+
+using vid_t = unsigned;
 
 template <typename T>
 class Handle {
@@ -71,6 +73,8 @@ bool operator==(Handle<T> const& lhs, Handle<T> const& rhs) {
   return lhs.GetValue() == rhs.GetValue();
 }
 
+using VNode = Handle<vid_t>;
+
 template <typename T>
 class Range {
  public:
@@ -91,49 +95,56 @@ class Range {
   size_t size_;
 };
 
+using VRange = Range<vid_t>;
+
 template <typename T, typename U>
-class rvector : public gvector<T> {
+class rvector : public garray<T> {
  public:
-  rvector() : gvector<T>() {}
+  rvector() : garray<T>() {}
   explicit rvector(const Range<U>& range)
-      : gvector<T>(range.size()), range_(range) {}
+      : garray<T>(range.size()), range_(range) {}
   rvector(const Range<U>& range, const T& value)
-      : gvector<T>(range.size(), value), range_(range) {}
+      : garray<T>(range.size(), value), range_(range) {}
 
   ~rvector() {}
 
   void Init(const Range<U>& range, const T& value) {
-    gvector<T>::clear();
-    gvector<T>::resize(range.size(), value);
+    garray<T>::clear();
+    garray<T>::resize(range.size(), value);
     range_ = range;
   }
 
   void SetValue(Range<U>& range, const T& value) {
-    std::fill_n(&gvector<T>::start_[range.begin().GetValue() - range_.begin().GetValue()],
+    std::fill_n(&garray<T>::start_[range.begin().GetValue() -
+                                   range_.begin().GetValue()],
                 range.size(), value);
   }
 
-  void SetValue(const T& value) { std::fill(gvector<T>::start_, gvector<T>::finish_, value); }
+  void SetValue(const T& value) {
+    std::fill(garray<T>::start_, garray<T>::end_, value);
+  }
 
   inline T& operator[](const Handle<U>& loc) {
-    return gvector<T>::start_[loc.GetValue() - range_.begin().GetValue()];
+    return garray<T>::start_[loc.GetValue() - range_.begin().GetValue()];
   }
 
  private:
   Range<U> range_;
 };
 
+using VVector<T> = rvector<T, vid_t>;
+
 #include <functional>
 
 namespace std {
 
 template <>
-struct hash<Handle<unsigned>> {
-  inline size_t operator()(const Handle<unsigned>& obj) const {
-    return hash<unsigned>()(obj.GetValue());
+struct hash<Handle<vid_t>> {
+  inline size_t operator()(const Handle<vid_t>& obj) const {
+    return hash<vid_t>()(obj.GetValue());
   }
 };
 
 }  // namespace std
 
-#endif  // RVECTOR_H_
+#endif  // VVECTOR_H_

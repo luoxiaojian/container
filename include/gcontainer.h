@@ -23,6 +23,66 @@
 #define ROUND_UP(bytes) (((bytes) + BLOCK_SIZE - 1) & ~(BLOCK_SIZE - 1))
 
 template <typename T>
+class garray {
+ public:
+  garray() : start_(NULL), end_(NULL) {}
+  explicit garray(size_t n) {
+    start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
+    end_ = gc_impl::uninitialized_fill_n_nv(start_, n);
+  }
+
+  garray(size_t n, const T &value) {
+    start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
+    end_ = gc_impl::uninitialized_fill_n(start_, n, value);
+  }
+
+  ~garray() {
+    if (start_ != NULL) {
+      gc_impl::Destroy(start_, end_);
+      GFREE(start_, end_ - start_);
+    }
+  }
+
+  size_t size() const { return end_ - start_; }
+
+  void clear() {
+    if (start_ != NULL) {
+      gc_impl::Destroy(start_, end_);
+      GFREE(start_, end_ - start_);
+      start_ = end_ = NULL;
+    }
+  }
+
+  void resize(size_t n, const T &val) {
+    clear();
+    start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
+    end_ = gc_impl::uninitialized_fill_n(start_, n, value);
+  }
+
+  void resize(size_t n) {
+    clear();
+    start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
+    end_ = gc_impl::uninitialized_fill_n_nv(start_, n);
+  }
+
+  void swap(garray &rhs) {
+    std::swap(start_, rhs.start_);
+    std::swap(end_, rhs.end_);
+  }
+
+  T *begin() { return start_; }
+  const T *begin() const { return (const T *)start_; }
+  T *end() { return end_; }
+  const T *end() const { return (const T *)end_; }
+
+  T &operator[](size_t n) { return *(start_ + n); }
+  const T &operator[](size_t n) const { return *(start_ + n); }
+
+  T *start_;
+  T *end_;
+};
+
+template <typename T>
 class gvector {
  public:
   gvector() : start_(NULL), finish_(NULL), end_of_storage_(NULL) {}
