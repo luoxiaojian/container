@@ -4,7 +4,7 @@
 
 int main() {
   gvector<int> vec;
-  vec.resize(100);
+  vec.Resize(100);
 
   for (int i = 0; i < 100; i++) {
     vec[i] = i * 10;

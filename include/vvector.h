@@ -117,11 +117,11 @@ class rvector : public garray<T> {
   ~rvector() {}
 
   void SetValue(Range<U>& range, const T& value) {
-    std::fill_n(&start_[range.begin().GetValue() - range_.begin().GetValue()],
+    std::fill_n(&garray<T>::start_[range.begin().GetValue() - range_.begin().GetValue()],
                 range.size(), value);
   }
 
-  void SetValue(const T& value) { std::fill(start_, end_, value); }
+  void SetValue(const T& value) { std::fill(garray<T>::start_, garray<T>::end_, value); }
 
   inline T& operator[](const Handle<U>& loc) {
     return garray<T>::operator[](loc.GetValue() - range_.begin().GetValue());
@@ -145,21 +145,21 @@ class nrvector : public garray<T> {
   nrvector() : garray<T>(), new_begin_(NULL) {}
   explicit nrvector(const Range<U>& range)
       : garray<T>(range.size()), range_(range) {
-    new_begin_ = begin_ - range_.begin().GetValue();
+    new_begin_ = garray<T>::start_ - range_.begin().GetValue();
   }
   nrvector(const Range<U>& range, const T& value)
       : garray<T>(range.size(), value), range_(range) {
-    new_begin_ = begin_ - range_.begin().GetValue();
+    new_begin_ = garray<T>::start_ - range_.begin().GetValue();
   }
 
   ~nrvector() {}
 
   void SetValue(Range<U>& range, const T& value) {
-    std::fill_n(&start_[range.begin().GetValue() - range_.begin().GetValue()],
+    std::fill_n(&garray<T>::start_[range.begin().GetValue() - range_.begin().GetValue()],
                 range.size(), value);
   }
 
-  void SetValue(const T& value) { std::fill(start_, end_, value); }
+  void SetValue(const T& value) { std::fill(garray<T>::start_, garray<T>::end_, value); }
 
   inline T& operator[](const Handle<U>& loc) {
     return new_begin_[loc.GetValue()];
@@ -181,8 +181,11 @@ class nrvector : public garray<T> {
   T* new_begin_;
 };
 
-using VVector<T> = rvector<T, vid_t>;
-using NVVector<T> = nrvector<T, vid_t>;
+template <typename T>
+using VVector = rvector<T, vid_t>;
+
+template <typename T>
+using NVVector = nrvector<T, vid_t>;
 
 #include <functional>
 

@@ -2,9 +2,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
+#include <unistd.h>
 
-#define SIZE (1024 * 1024 * 16)
-#define ITER (32)
+#define SIZE (1024 * 1024 * 128)
+#define ITER (8)
 
 double get_current_time() {
   timeval t;

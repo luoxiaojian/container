@@ -6,7 +6,7 @@ int main() {
   gvector<int> vec;
 
   for (int i = 0; i < 100; i++) {
-    vec.push_back(i * 10);
+    vec.PushBack(i * 10);
   }
 
   for (int i = 0; i < 100; i++) {

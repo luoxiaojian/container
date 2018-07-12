@@ -20,11 +20,11 @@ class X {
 int main() {
   gvector<X> vec(2);
   printf("========================================\n");
-  vec.resize(3, X(1));
+  vec.Resize(3, X(1));
   printf("========================================\n");
-  vec.resize(4, X(2));
+  vec.Resize(4, X(2));
   printf("========================================\n");
-  vec.push_back(X(3));
+  vec.PushBack(X(3));
   printf("========================================\n");
   return 0;
 }

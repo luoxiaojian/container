@@ -148,7 +148,7 @@ class gvector {
     std::swap(end_of_storage_, rhs.end_of_storage_);
   }
 
-  void PushBack(const T &x) { resize(size() + 1, x); }
+  void PushBack(const T &x) { Resize(Size() + 1, x); }
 
   T *begin() { return start_; }
   const T *begin() const { return (const T *)start_; }
