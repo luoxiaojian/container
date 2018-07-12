@@ -36,36 +36,16 @@ class garray {
     end_ = gc_impl::uninitialized_fill_n(start_, n, value);
   }
 
-  ~garray() {
+  virtual ~garray() {
     if (start_ != NULL) {
       gc_impl::Destroy(start_, end_);
       GFREE(start_, end_ - start_);
     }
   }
 
-  size_t size() const { return end_ - start_; }
+  size_t Size() const { return end_ - start_; }
 
-  void clear() {
-    if (start_ != NULL) {
-      gc_impl::Destroy(start_, end_);
-      GFREE(start_, end_ - start_);
-      start_ = end_ = NULL;
-    }
-  }
-
-  void resize(size_t n, const T &val) {
-    clear();
-    start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
-    end_ = gc_impl::uninitialized_fill_n(start_, n, value);
-  }
-
-  void resize(size_t n) {
-    clear();
-    start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
-    end_ = gc_impl::uninitialized_fill_n_nv(start_, n);
-  }
-
-  void swap(garray &rhs) {
+  void Swap(garray &rhs) {
     std::swap(start_, rhs.start_);
     std::swap(end_, rhs.end_);
   }
@@ -77,6 +57,9 @@ class garray {
 
   T &operator[](size_t n) { return *(start_ + n); }
   const T &operator[](size_t n) const { return *(start_ + n); }
+
+  inline T *Buffer() { return start_; }
+  inline const T *Buffer() const { return (const T *)start_; }
 
   T *start_;
   T *end_;
@@ -99,17 +82,17 @@ class gvector {
     end_of_storage_ = start_ + n;
   }
 
-  ~gvector() {
+  virtual ~gvector() {
     if (start_ != NULL) {
       gc_impl::Destroy(start_, finish_);
       GFREE(start_, end_of_storage_ - start_);
     }
   }
 
-  size_t size() const { return finish_ - start_; }
-  size_t capacity() const { return end_of_storage_ - start_; }
+  size_t Size() const { return finish_ - start_; }
+  size_t Capacity() const { return end_of_storage_ - start_; }
 
-  void resize(size_t n, const T &val) {
+  void Resize(size_t n, const T &val) {
     size_t _size = finish_ - start_;
     if (n < _size) {
       gc_impl::Destroy(start_ + n, finish_);
@@ -131,7 +114,7 @@ class gvector {
       }
     }
   }
-  void resize(size_t n) {
+  void Resize(size_t n) {
     size_t _size = finish_ - start_;
     if (n < _size) {
       gc_impl::Destroy(start_ + n, finish_);
@@ -154,18 +137,18 @@ class gvector {
     }
   }
 
-  void clear() {
+  void Clear() {
     gc_impl::Destroy(start_, finish_);
     finish_ = start_;
   }
 
-  void swap(gvector &rhs) {
+  void Swap(gvector &rhs) {
     std::swap(start_, rhs.start_);
     std::swap(finish_, rhs.finish_);
     std::swap(end_of_storage_, rhs.end_of_storage_);
   }
 
-  void push_back(const T &x) { resize(size() + 1, x); }
+  void PushBack(const T &x) { resize(size() + 1, x); }
 
   T *begin() { return start_; }
   const T *begin() const { return (const T *)start_; }
@@ -174,6 +157,9 @@ class gvector {
 
   T &operator[](size_t n) { return *(start_ + n); }
   const T &operator[](size_t n) const { return *(start_ + n); }
+
+  inline T *Buffer() { return start_; }
+  inline const T *Buffer() const { return (const T *)start_; }
 
   T *start_;
   T *finish_;
