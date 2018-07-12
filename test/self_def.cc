@@ -18,7 +18,7 @@ class X {
 };
 
 int main() {
-  gvector<X> vec(2);
+  GVector<X> vec(2);
   printf("========================================\n");
   vec.Resize(3, X(1));
   printf("========================================\n");

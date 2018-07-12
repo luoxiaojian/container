@@ -17,13 +17,13 @@ double get_current_time() {
 
 int main() {
   for (int i = 0; i < ITER; i++) {
-    gvector<double> vec(SIZE);
+    GVector<double> vec(SIZE);
     vec[0] = 0.0;
     vec[SIZE - 1] = 1.0;
   }
   double t1 = get_current_time();
   for (int i = 0; i < ITER; i++) {
-    gvector<double> vec(SIZE);
+    GVector<double> vec(SIZE);
     vec[0] = 0.0;
     vec[SIZE - 1] = 1.0;
   }

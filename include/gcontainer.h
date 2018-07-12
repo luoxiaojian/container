@@ -23,20 +23,20 @@
 #define ROUND_UP(bytes) (((bytes) + BLOCK_SIZE - 1) & ~(BLOCK_SIZE - 1))
 
 template <typename T>
-class garray {
+class GArray {
  public:
-  garray() : start_(NULL), end_(NULL) {}
-  explicit garray(size_t n) {
+  GArray() : start_(NULL), end_(NULL) {}
+  explicit GArray(size_t n) {
     start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
     end_ = gc_impl::uninitialized_fill_n_nv(start_, n);
   }
 
-  garray(size_t n, const T &value) {
+  GArray(size_t n, const T &value) {
     start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
     end_ = gc_impl::uninitialized_fill_n(start_, n, value);
   }
 
-  virtual ~garray() {
+  virtual ~GArray() {
     if (start_ != NULL) {
       gc_impl::Destroy(start_, end_);
       GFREE(start_, end_ - start_);
@@ -45,7 +45,27 @@ class garray {
 
   size_t Size() const { return end_ - start_; }
 
-  void Swap(garray &rhs) {
+  void Clear() {
+    if (start_ != NULL) {
+      gc_impl::Destroy(start_, end_);
+      GFREE(start_, end_ - start_);
+      start_ = end_ = NULL;
+    }
+  }
+
+  void Resize(size_t n, const T &val) {
+    Clear();
+    start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
+    end_ = gc_impl::uninitialized_fill_n(start_, n, value);
+  }
+
+  void Resize(size_t n) {
+    Clear();
+    start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
+    end_ = gc_impl::uninitialized_fill_n_nv(start_, n);
+  }
+
+  void Swap(GArray &rhs) {
     std::swap(start_, rhs.start_);
     std::swap(end_, rhs.end_);
   }
@@ -66,23 +86,23 @@ class garray {
 };
 
 template <typename T>
-class gvector {
+class GVector {
  public:
-  gvector() : start_(NULL), finish_(NULL), end_of_storage_(NULL) {}
+  GVector() : start_(NULL), finish_(NULL), end_of_storage_(NULL) {}
 
-  explicit gvector(size_t n) {
+  explicit GVector(size_t n) {
     start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
     finish_ = gc_impl::uninitialized_fill_n_nv(start_, n);
     end_of_storage_ = start_ + n;
   }
 
-  gvector(size_t n, const T &value) {
+  GVector(size_t n, const T &value) {
     start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
     finish_ = gc_impl::uninitialized_fill_n(start_, n, value);
     end_of_storage_ = start_ + n;
   }
 
-  virtual ~gvector() {
+  virtual ~GVector() {
     if (start_ != NULL) {
       gc_impl::Destroy(start_, finish_);
       GFREE(start_, end_of_storage_ - start_);
@@ -142,7 +162,7 @@ class gvector {
     finish_ = start_;
   }
 
-  void Swap(gvector &rhs) {
+  void Swap(GVector &rhs) {
     std::swap(start_, rhs.start_);
     std::swap(finish_, rhs.finish_);
     std::swap(end_of_storage_, rhs.end_of_storage_);

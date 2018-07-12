@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 int main() {
-  gvector<int> vec;
+  GVector<int> vec;
   vec.Resize(100);
 
   for (int i = 0; i < 100; i++) {

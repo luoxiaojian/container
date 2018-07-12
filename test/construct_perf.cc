@@ -20,11 +20,11 @@ double get_current_time() {
 
 int main() {
   for (int i = 0; i < ITER; i++) {
-    gvector<double> vec(SIZE);
+    GVector<double> vec(SIZE);
   }
   double t1 = get_current_time();
   for (int i = 0; i < ITER; i++) {
-    gvector<double> vec(SIZE);
+    GVector<double> vec(SIZE);
   }
   double t2 = get_current_time();
 
@@ -50,16 +50,16 @@ int main() {
   double t6 = get_current_time();
 
   printf("no value:\n");
-  printf("gvector: %lf\n", t2 - t1);
+  printf("GVector: %lf\n", t2 - t1);
   printf("malloc:  %lf\n", t4 - t3);
   printf("vector:  %lf\n", t6 - t5);
 
   for (int i = 0; i < ITER; i++) {
-    gvector<double> vec(SIZE, 3.0);
+    GVector<double> vec(SIZE, 3.0);
   }
   t1 = get_current_time();
   for (int i = 0; i < ITER; i++) {
-    gvector<double> vec(SIZE, 3.0);
+    GVector<double> vec(SIZE, 3.0);
   }
   t2 = get_current_time();
 
@@ -86,7 +86,7 @@ int main() {
   }
   t6 = get_current_time();
   printf("value:\n");
-  printf("gvector: %lf\n", t2 - t1);
+  printf("GVector: %lf\n", t2 - t1);
   printf("malloc:  %lf\n", t4 - t3);
   printf("vector:  %lf\n", t6 - t5);
 

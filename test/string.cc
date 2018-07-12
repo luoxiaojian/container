@@ -4,7 +4,7 @@
 #include "include/gcontainer.h"
 
 int main() {
-  gvector<std::string> vec;
+  GVector<std::string> vec;
   vec.Resize(100);
   for (int i = 0; i < 100; i++) {
     vec[i] = "string-" + std::to_string(i);

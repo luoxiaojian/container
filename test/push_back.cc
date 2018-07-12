@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 int main() {
-  gvector<int> vec;
+  GVector<int> vec;
 
   for (int i = 0; i < 100; i++) {
     vec.PushBack(i * 10);

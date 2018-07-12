@@ -67,46 +67,5 @@ int main() {
     printf("%lf, %lf\n", sum1, sum2);
   }
 
-  {
-    NVVector<double> rvec(range, 500.0);
-    printf("new vector:\n");
-    for (int iter = 0; iter < ITER; ++iter) {
-      double val = 0.0;
-      for (size_t i = 0; i < SIZE; ++i) {
-        rvec[loc[i]] += val;
-        val += 1.0;
-      }
-    }
-
-    double t1 = get_current_time();
-    for (int iter = 0; iter < ITER; ++iter) {
-      double val = 0.0;
-      for (size_t i = 0; i < SIZE; ++i) {
-        rvec[loc[i]] += val;
-        val += 1.0;
-      }
-    }
-    double t2 = get_current_time();
-
-    double sum1 = 0.0, sum2 = 0.0;
-    for (int iter = 0; iter < ITER; ++iter) {
-      for (size_t i = 0; i < SIZE; ++i) {
-        sum1 = (sum1 + rvec[loc[i]]) / 2.0;
-      }
-    }
-
-    double t3 = get_current_time();
-    for (int iter = 0; iter < ITER; ++iter) {
-      for (size_t i = 0; i < SIZE; ++i) {
-        sum2 = (sum2 + rvec[loc[i]]) / 2.0;
-      }
-    }
-    double t4 = get_current_time();
-
-    printf("write: %lf\n", t2 - t1);
-    printf("read: %lf\n", t4 - t3);
-    printf("%lf, %lf\n", sum1, sum2);
-  }
-
   return 0;
 }

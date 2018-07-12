@@ -106,86 +106,63 @@ class Range {
 using VRange = Range<vid_t>;
 
 template <typename T, typename U>
-class rvector : public garray<T> {
+class rvector : public GArray<T> {
  public:
-  rvector() : garray<T>() {}
+  rvector() : GArray<T>(), fake_start_(NULL) {}
   explicit rvector(const Range<U>& range)
-      : garray<T>(range.size()), range_(range) {}
+      : GArray<T>(range.size()), range_(range) {
+    fake_start_ = GArray<T>::start_ - range_.begin().GetValue();
+  }
   rvector(const Range<U>& range, const T& value)
-      : garray<T>(range.size(), value), range_(range) {}
+      : GArray<T>(range.size(), value), range_(range) {
+    fake_start_ = GArray<T>::start_ - range_.begin().GetValue();
+  }
 
   ~rvector() {}
 
+  void Reset(const Range<U>& range) {
+    GArray<T>::Resize(range.size());
+    fake_start_ = GArray<T>::start_ - range_.begin().GetValue();
+  }
+
+  void Reset(const Range<U>& range, const T& value) {
+    GArray<T>::Resize(range.size(), value);
+    fake_start_ = GArray<T>::start_ - range_.begin().GetValue();
+  }
+
   void SetValue(Range<U>& range, const T& value) {
-    std::fill_n(&garray<T>::start_[range.begin().GetValue() - range_.begin().GetValue()],
+    std::fill_n(&GArray<T>::start_[range.begin().GetValue() -
+                                   range_.begin().GetValue()],
                 range.size(), value);
   }
 
-  void SetValue(const T& value) { std::fill(garray<T>::start_, garray<T>::end_, value); }
+  void SetValue(const T& value) {
+    std::fill(GArray<T>::start_, GArray<T>::end_, value);
+  }
 
   inline T& operator[](const Handle<U>& loc) {
-    return garray<T>::operator[](loc.GetValue() - range_.begin().GetValue());
+    return fake_start_[loc.GetValue()];
   }
   inline const T& operator[](const Handle<U>& loc) const {
-    return garray<T>::operator[](loc.GetValue() - range_.begin().GetValue());
+    return fake_start_[loc.GetValue()];
   }
 
   void Swap(rvector& rhs) {
-    garray<T>::Swap((garray<T>&)rhs);
+    GArray<T>::Swap((GArray<T>&)rhs);
     range_.Swap(rhs.range_);
+    std::swap(fake_start_, rhs.fake_start_);
   }
 
  private:
+  void Resize() {}
+  void Clear() {}
+
   Range<U> range_;
-};
-
-template <typename T, typename U>
-class nrvector : public garray<T> {
- public:
-  nrvector() : garray<T>(), new_begin_(NULL) {}
-  explicit nrvector(const Range<U>& range)
-      : garray<T>(range.size()), range_(range) {
-    new_begin_ = garray<T>::start_ - range_.begin().GetValue();
-  }
-  nrvector(const Range<U>& range, const T& value)
-      : garray<T>(range.size(), value), range_(range) {
-    new_begin_ = garray<T>::start_ - range_.begin().GetValue();
-  }
-
-  ~nrvector() {}
-
-  void SetValue(Range<U>& range, const T& value) {
-    std::fill_n(&garray<T>::start_[range.begin().GetValue() - range_.begin().GetValue()],
-                range.size(), value);
-  }
-
-  void SetValue(const T& value) { std::fill(garray<T>::start_, garray<T>::end_, value); }
-
-  inline T& operator[](const Handle<U>& loc) {
-    return new_begin_[loc.GetValue()];
-    // return garray<T>::operator[](loc.GetValue() - range_.begin().GetValue());
-  }
-  inline const T& operator[](const Handle<U>& loc) const {
-    return new_begin_[loc.GetValue()];
-    // return garray<T>::operator[](loc.GetValue() - range_.begin().GetValue());
-  }
-
-  void Swap(nrvector& rhs) {
-    garray<T>::Swap((garray<T>&)rhs);
-    range_.Swap(rhs.range_);
-    std::swap(new_begin_, rhs.new_begin_);
-  }
-
- private:
-  Range<U> range_;
-  T* new_begin_;
+  T* fake_start_;
 };
 
 template <typename T>
 using VVector = rvector<T, vid_t>;
-
-template <typename T>
-using NVVector = nrvector<T, vid_t>;
 
 #include <functional>
 
