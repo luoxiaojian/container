@@ -6,8 +6,9 @@
 #include <unistd.h>
 
 #include <utility>
+#include <vector>
 
-#define SIZE 1024 * 1024 * 4
+#define SIZE 1024 * 1024 * 32
 #define ITER 32
 
 double get_current_time() {
@@ -19,28 +20,75 @@ double get_current_time() {
 
 int main() {
   for (int i = 0; i < ITER; i++) {
-    gvector<double> vec(SIZE, 3.0);
+    gvector<double> vec(SIZE);
   }
   double t1 = get_current_time();
   for (int i = 0; i < ITER; i++) {
-    gvector<double> vec(SIZE, 3.0);
+    gvector<double> vec(SIZE);
   }
   double t2 = get_current_time();
 
   for (int i = 0; i < ITER; i++) {
     double *buf = reinterpret_cast<double *>(malloc(sizeof(double) * SIZE));
-    std::fill_n(buf, SIZE, 3.0);
     free(buf);
   }
 
   double t3 = get_current_time();
   for (int i = 0; i < ITER; i++) {
     double *buf = reinterpret_cast<double *>(malloc(sizeof(double) * SIZE));
-    std::fill_n(buf, SIZE, 3.0);
     free(buf);
   }
   double t4 = get_current_time();
 
-  printf("%lf / %lf = %lf\n", t2 - t1, t4 - t3, (t2 - t1) / (t4 - t3));
+  for (int i = 0; i < ITER; i++) {
+    std::vector<double> vec(SIZE);
+  }
+  double t5 = get_current_time();
+  for (int i = 0; i < ITER; i++) {
+    std::vector<double> vec(SIZE);
+  }
+  double t6 = get_current_time();
+
+  printf("no value:\n");
+  printf("gvector: %lf\n", t2 - t1);
+  printf("malloc:  %lf\n", t4 - t3);
+  printf("vector:  %lf\n", t6 - t5);
+
+  for (int i = 0; i < ITER; i++) {
+    gvector<double> vec(SIZE, 3.0);
+  }
+  t1 = get_current_time();
+  for (int i = 0; i < ITER; i++) {
+    gvector<double> vec(SIZE, 3.0);
+  }
+  t2 = get_current_time();
+
+  for (int i = 0; i < ITER; i++) {
+    double *buf = reinterpret_cast<double *>(malloc(sizeof(double) * SIZE));
+    std::fill_n(buf, SIZE, 3.0);
+    free(buf);
+  }
+
+  t3 = get_current_time();
+  for (int i = 0; i < ITER; i++) {
+    double *buf = reinterpret_cast<double *>(malloc(sizeof(double) * SIZE));
+    std::fill_n(buf, SIZE, 3.0);
+    free(buf);
+  }
+  t4 = get_current_time();
+
+  for (int i = 0; i < ITER; i++) {
+    std::vector<double> vec(SIZE, 3.0);
+  }
+  t5 = get_current_time();
+  for (int i = 0; i < ITER; i++) {
+    std::vector<double> vec(SIZE, 3.0);
+  }
+  t6 = get_current_time();
+  printf("value:\n");
+  printf("gvector: %lf\n", t2 - t1);
+  printf("malloc:  %lf\n", t4 - t3);
+  printf("vector:  %lf\n", t6 - t5);
+
   return 0;
 }
