@@ -24,7 +24,9 @@ int main() {
     id_mask = (id_mask << 31);
     unsigned a = id_mask - 10u;
     unsigned b = id_mask;
-    VRange range(a, b);
+    VNode begin(a);
+    VNode end(b);
+    VRange range(begin, end);
     printf("range.size() = %lu\n", range.size());
     VVector<double> rvec(range, 500);
     VNode cur;

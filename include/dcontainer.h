@@ -1,6 +1,11 @@
 #ifndef DVECTOR_H_
 #define DVECTOR_H_
 
+#include <sys/file.h>
+#include <sys/stat.h>
+#include <sys/unistd.h>
+#include <sys/mman.h>
+
 #include <algorithm>
 #include <string>
 #include <type_traits>
@@ -16,7 +21,7 @@ enum DCState {
 template <typename T>
 class DVector : public GVector<T> {
   static_assert(std::is_same<gc_impl::true_type,
-                             gc_impl::type_traits<T>::is_pod_type>::value,
+                             typename gc_impl::type_traits<T>::is_pod_type>::value,
                 "DVector should based on pod type");
 
  public:
@@ -53,7 +58,7 @@ class DVector : public GVector<T> {
 
   void Dump(const std::string& fname) {
     FILE* fout = fopen(fname.c_str(), "wb");
-    fwrite(GVector<T>::start_, sizeof(T), Size(), fout);
+    fwrite(GVector<T>::start_, sizeof(T), GVector<T>::Size(), fout);
     fflush(fout);
     fclose(fout);
   }
@@ -66,7 +71,7 @@ class DVector : public GVector<T> {
       return;
     }
 
-    struct stat = st;
+    struct stat st;
     fstat(fd, &st);
     size_t file_size = st.st_size;
     size_t size = file_size / sizeof(T);
@@ -82,7 +87,7 @@ class DVector : public GVector<T> {
     if (state_ == DCAllocated) {
       return;
     }
-    munmap(GVector<T>::start_, Size() * sizeof(T));
+    munmap(GVector<T>::start_, GVector<T>::Size() * sizeof(T));
     GVector<T>::start_ = GVector<T>::finish_ = GVector<T>::end_of_storage_ =
         NULL;
     state_ = DCAllocated;
@@ -92,7 +97,7 @@ class DVector : public GVector<T> {
     if (state_ == DCAllocated) {
       return;
     }
-    size_t size = Size();
+    size_t size = GVector<T>::Size();
     size_t size_in_bytes = sizeof(T) * size;
     T* new_start = reinterpret_cast<T*>(GMALLOC(size_in_bytes));
     memcpy(new_start, GVector<T>::start_, size_in_bytes);
@@ -114,7 +119,7 @@ class DVector : public GVector<T> {
 template <typename T>
 class DArray : public GArray<T> {
   static_assert(std::is_same<gc_impl::true_type,
-                             gc_impl::type_traits<T>::is_pod_type>::value,
+                             typename gc_impl::type_traits<T>::is_pod_type>::value,
                 "DArray should based on pod type");
 
  public:
@@ -151,7 +156,7 @@ class DArray : public GArray<T> {
 
   void Dump(const std::string& fname) {
     FILE* fout = fopen(fname.c_str(), "wb");
-    fwrite(GArray<T>::start_, sizeof(T), Size(), fout);
+    fwrite(GArray<T>::start_, sizeof(T), GArray<T>::Size(), fout);
     fflush(fout);
     fclose(fout);
   }
@@ -163,13 +168,13 @@ class DArray : public GArray<T> {
       return;
     }
 
-    struct stat = st;
+    struct stat st;
     fstat(fd, &st);
     size_t file_size = st.st_size;
     size_t size = file_size / sizeof(T);
     GArray<T>::start_ = reinterpret_cast<T*>(
         mmap(NULL, size * sizeof(T), PROT_READ, MAP_PRIVATE, fd, 0));
-    GArray<T>::finish_ = GArray<T>::start_ + size;
+    GArray<T>::end_ = GArray<T>::start_ + size;
     close(fd);
     state_ = DCMapped;
   }
@@ -178,8 +183,8 @@ class DArray : public GArray<T> {
     if (state_ == DCAllocated) {
       return;
     }
-    munmap(GArray<T>::start_, Size() * sizeof(T));
-    GArray<T>::start_ = GArray<T>::finish_ = NULL;
+    munmap(GArray<T>::start_, GArray<T>::Size() * sizeof(T));
+    GArray<T>::start_ = GArray<T>::end_ = NULL;
     state_ = DCAllocated;
   }
 
@@ -187,13 +192,13 @@ class DArray : public GArray<T> {
     if (state_ == DCAllocated) {
       return;
     }
-    size_t size = Size();
+    size_t size = GArray<T>::Size();
     size_t size_in_bytes = sizeof(T) * size;
     T* new_start = reinterpret_cast<T*>(GMALLOC(size_in_bytes));
     memcpy(new_start, GArray<T>::start_, size_in_bytes);
     Release();
     GArray<T>::start_ = new_start;
-    GArray<T>::finish_ = new_start + size;
+    GArray<T>::end_ = new_start + size;
   }
 
  private:

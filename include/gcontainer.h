@@ -56,7 +56,7 @@ class GArray {
   void Resize(size_t n, const T &val) {
     Clear();
     start_ = reinterpret_cast<T *>(GMALLOC(n * sizeof(T)));
-    end_ = gc_impl::uninitialized_fill_n(start_, n, value);
+    end_ = gc_impl::uninitialized_fill_n(start_, n, val);
   }
 
   void Resize(size_t n) {
