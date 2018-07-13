@@ -2,9 +2,9 @@
 #define DVECTOR_H_
 
 #include <sys/file.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/unistd.h>
-#include <sys/mman.h>
 
 #include <algorithm>
 #include <string>
@@ -20,9 +20,10 @@ enum DCState {
 
 template <typename T>
 class DVector : public GVector<T> {
-  static_assert(std::is_same<gc_impl::true_type,
-                             typename gc_impl::type_traits<T>::is_pod_type>::value,
-                "DVector should based on pod type");
+  static_assert(
+      std::is_same<gc_impl::true_type,
+                   typename gc_impl::type_traits<T>::is_pod_type>::value,
+      "DVector should based on pod type");
 
  public:
   DVector() : GVector<T>(), state_(DCAllocated) {}
@@ -118,9 +119,10 @@ class DVector : public GVector<T> {
 
 template <typename T>
 class DArray : public GArray<T> {
-  static_assert(std::is_same<gc_impl::true_type,
-                             typename gc_impl::type_traits<T>::is_pod_type>::value,
-                "DArray should based on pod type");
+  static_assert(
+      std::is_same<gc_impl::true_type,
+                   typename gc_impl::type_traits<T>::is_pod_type>::value,
+      "DArray should based on pod type");
 
  public:
   DArray() : GArray<T>(), state_(DCAllocated) {}

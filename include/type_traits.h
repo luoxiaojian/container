@@ -13,7 +13,7 @@ struct type_traits {
 
 #define DECLARE_TT(type, vt1, tt1) \
   template <>                      \
-  struct type_traits<type> {      \
+  struct type_traits<type> {       \
     typedef vt1 tt1;               \
   };
 
